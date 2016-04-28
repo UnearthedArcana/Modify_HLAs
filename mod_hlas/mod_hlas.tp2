@@ -1,0 +1,25 @@
+BACKUP ~mod_hlas/backup~
+AUTHOR ~SubtleD~
+
+
+VERSION ~0.01~
+
+
+BEGIN ~modify some hla tables~
+
+
+INCLUDE ~mod_hlas/lib/hla_actions.tpa~
+
+
+COPY_EXISTING ~lufi0.2da~ ~override~
+	LPF add_hla STR_VAR ability = ~GA_SPCL922~ num_allowed = ~1~ excluded_by = ~GA_SPCL922~ END
+	LPF add_hla STR_VAR ability = ~GA_SPCL923~ num_allowed = ~20~ END
+BUT_ONLY
+
+COPY_EXISTING ~lucl0.2da~ ~override~
+	LPF remove_hla STR_VAR ability = ~SPPR723~ END
+BUT_ONLY
+
+COPY_EXISTING ~luma0.2da~ ~override~
+	LPF remove_hla STR_VAR ability = ~SPCL930~ END
+BUT_ONLY
