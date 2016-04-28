@@ -94,3 +94,25 @@ BEGIN
   INSERT_2DA_ROW ("%first_empty_row%" - 1) %cols% ~%2da_row% %ability% %icon% %strref% %min_lev% %max_level% %num_allowed% %prerequisite% %excluded_by% %alignment_restrict%~
   PRETTY_PRINT_2DA
 END
+
+
+DEFINE_ACTION_FUNCTION get_hla_table
+  STR_VAR
+    kit_name = ~~
+  RET
+    hla_table
+BEGIN
+  COPY_EXISTING ~luabbr.2da~ ~override~
+    READ_2DA_ENTRIES_NOW file 2 // read all file into memory
+    FOR (row = 1; row < file; row += 1) BEGIN // iterate over rows
+      READ_2DA_ENTRY_FORMER ~file~ row 0 kit
+      READ_2DA_ENTRY_FORMER ~file~ row 1 table
+      TEXT_SPRINT $d5_hla_tables(~%kit%~) ~%table%~
+    END
+  BUT_ONLY
+  ACTION_PHP_EACH d5_hla_tables AS ind => tab BEGIN
+    ACTION_IF ~%ind%~ STRING_EQUAL_CASE ~%kit_name%~ BEGIN
+      OUTER_TEXT_SPRINT hla_table ~%tab%~
+    END
+  END
+END
