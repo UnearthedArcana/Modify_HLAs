@@ -20,7 +20,7 @@ BEGIN
     SET empty_col_count = 0 // amount of empty columns in the row
     FOR (j = 0; j < cols; ++j) BEGIN // iterate over columns in the row
       READ_2DA_ENTRY_FORMER file i j col_value // read column value
-      PATCH_IF "%col_value%" STRING_EQUAL "*" BEGIN // asterisk symbolizes empty row
+      PATCH_IF "%col_value%" STRING_EQUAL "*" BEGIN // asterisk symbolizes empty column
         empty_col_count += 1
       END
     END
@@ -40,15 +40,75 @@ END
 
 DEFINE_PATCH_FUNCTION remove_hla
   STR_VAR
+    remove_ability = ~*~
+BEGIN
+  COUNT_2DA_COLS cols // amount of columns
+  COUNT_2DA_ROWS cols rows // amount of rows
+  READ_2DA_ENTRIES_NOW file cols // read all file into memory
+  SET num_deleted = 0
+  FOR (i = 0; i < file; ++i) BEGIN // iterate over rows
+    READ_2DA_ENTRY_FORMER file i 1 col_value // read column value
+    PATCH_IF "%col_value%" STRING_EQUAL_CASE "%remove_ability%" BEGIN // match .spl to be removed
+      REMOVE_2DA_ROW (i - num_deleted) cols // kill the row
+      SET num_deleted += 1
+    END
+  END
+END
+
+
+DEFINE_PATCH_FUNCTION replace_hla
+  STR_VAR
+    remove_ability = ~*~
+	2da_row = ~1~
     ability = ~*~
+    icon = ~*~
+    strref = ~*~
+    min_lev = ~1~
+    max_level = ~99~
+    num_allowed = ~*~
+    prerequisite = ~*~
+    excluded_by = ~*~
+    alignment_restrict = ~*~
 BEGIN
   COUNT_2DA_COLS cols // amount of columns
   COUNT_2DA_ROWS cols rows // amount of rows
   READ_2DA_ENTRIES_NOW file cols // read all file into memory  
+  SET num_deleted = 0
   FOR (i = 0; i < file; ++i) BEGIN // iterate over rows
     READ_2DA_ENTRY_FORMER file i 1 col_value // read column value
-    PATCH_IF "%col_value%" STRING_EQUAL "GA_%ability%" OR "%col_value%" STRING_EQUAL "AP_%ability%" BEGIN // match .spl to be removed
-      REMOVE_2DA_ROW i cols // kill the row
+    PATCH_IF "%col_value%" STRING_EQUAL_CASE "%remove_ability%" BEGIN // match .spl to be removed
+      REMOVE_2DA_ROW (i - num_deleted) cols // kill the row
+      SET num_deleted += 1
+    END
+  END
+  first_empty_row = rows // default value to amount of rows in order to skip removal if the table is full
+  FOR (i = 0; i < file; ++i) BEGIN // iterate over rows
+    SET empty_col_count = 0 // amount of empty columns in the row
+    FOR (j = 0; j < cols; ++j) BEGIN // iterate over columns in the row
+      READ_2DA_ENTRY_FORMER file i j col_value // read column value
+      PATCH_IF "%col_value%" STRING_EQUAL "*" BEGIN // asterisk symbolizes empty column
+        empty_col_count += 1
+      END
+    END
+    PATCH_IF "%empty_col_count%" = ("%cols%" - 1) BEGIN // first column in every row is its number, that's why (cols - 1)
+      first_empty_row = i // remember the first empty row
+      i = file // skip iterating over the rest of the rows
     END
   END  
+  WHILE ("%first_empty_row%" < "%rows%") BEGIN  // iterate over rows to remove
+    REMOVE_2DA_ROW j cols // kill the row
+    rows = rows - 1 // decrease the total amount of rows
+  END
+  INSERT_2DA_ROW ("%first_empty_row%" - 1) %cols% ~%2da_row% %ability% %icon% %strref% %min_lev% %max_level% %num_allowed% %prerequisite% %excluded_by% %alignment_restrict%~
+/*
+  SET num_deleted = 0
+  FOR (k = 0; k < file; ++k) BEGIN // iterate over rows
+    READ_2DA_ENTRY_FORMER file k 1 col_value // read column value
+    PATCH_IF "%col_value%" STRING_EQUAL_CASE "%remove_ability%" BEGIN // match .spl to be removed
+      REMOVE_2DA_ROW (i - num_deleted) cols // kill the row
+      SET num_deleted += 1
+    END
+  END
+*/
+  PRETTY_PRINT_2DA
 END
