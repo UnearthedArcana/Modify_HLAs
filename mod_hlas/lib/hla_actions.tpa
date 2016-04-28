@@ -29,10 +29,6 @@ BEGIN
       i = file // skip iterating over the rest of the rows
     END
   END  
-  WHILE ("%first_empty_row%" < "%rows%") BEGIN  // iterate over rows to remove
-    REMOVE_2DA_ROW j cols // kill the row
-    rows = rows - 1 // decrease the total amount of rows
-  END
   INSERT_2DA_ROW ("%first_empty_row%") %cols% ~%2da_row% %ability% %icon% %strref% %min_lev% %max_level% %num_allowed% %prerequisite% %excluded_by% %alignment_restrict%~
   PRETTY_PRINT_2DA
 END
@@ -95,20 +91,6 @@ BEGIN
       i = file // skip iterating over the rest of the rows
     END
   END  
-  WHILE ("%first_empty_row%" < "%rows%") BEGIN  // iterate over rows to remove
-    REMOVE_2DA_ROW j cols // kill the row
-    rows = rows - 1 // decrease the total amount of rows
-  END
   INSERT_2DA_ROW ("%first_empty_row%" - 1) %cols% ~%2da_row% %ability% %icon% %strref% %min_lev% %max_level% %num_allowed% %prerequisite% %excluded_by% %alignment_restrict%~
-/*
-  SET num_deleted = 0
-  FOR (k = 0; k < file; ++k) BEGIN // iterate over rows
-    READ_2DA_ENTRY_FORMER file k 1 col_value // read column value
-    PATCH_IF "%col_value%" STRING_EQUAL_CASE "%remove_ability%" BEGIN // match .spl to be removed
-      REMOVE_2DA_ROW (i - num_deleted) cols // kill the row
-      SET num_deleted += 1
-    END
-  END
-*/
   PRETTY_PRINT_2DA
 END
