@@ -14,25 +14,26 @@ INCLUDE ~mod_hlas/lib/hla_actions.tpa~
 //patch add________________________________________
 //
 COPY_EXISTING ~lufi0.2da~ ~override~
-	LPF add_hla STR_VAR ability = ~GA_SPCL922~ num_allowed = ~1~ excluded_by = ~GA_SPCL922~ END
-	LPF add_hla STR_VAR ability = ~GA_SPCL923~ num_allowed = ~20~ END
+	LPF patch_add_hla STR_VAR ability = ~GA_SPCL922~ num_allowed = ~1~ excluded_by = ~GA_SPCL922~ END
+	LPF patch_add_hla STR_VAR ability = ~GA_SPCL923~ num_allowed = ~20~ END
 BUT_ONLY
 
 //patch remove ____________________________________
 //
 COPY_EXISTING ~lucl0.2da~ ~override~
-	LPF remove_hla STR_VAR remove_ability = ~GA_SPPR723~ END
+	LPF patch_remove_hla STR_VAR remove_ability = ~GA_SPPR723~ END
 BUT_ONLY
 
 COPY_EXISTING ~luma0.2da~ ~override~
-	LPF remove_hla STR_VAR remove_ability = ~AP_SPCL930~ END
+	LPF patch_remove_hla STR_VAR remove_ability = ~AP_SPCL930~ END
 BUT_ONLY
 
 //patch replace____________________________________
 //
 COPY_EXISTING ~luth0.2da~ ~override~
-	LPF replace_hla STR_VAR remove_ability = ~GA_SPCL912~ ability = ~GA_SPCL923~ num_allowed = ~20~ END
+	LPF patch_replace_hla STR_VAR remove_ability = ~GA_SPCL912~ ability = ~GA_SPCL923~ num_allowed = ~20~ END
 BUT_ONLY
+
 
 //find table_______________________________________
 //
@@ -41,7 +42,7 @@ LAF get_hla_table STR_VAR kit_name = ~BOUNTY_HUNTER~ RET hla_table END
 PRINT ~%hla_table%~
 
 
-//action add, remove, replace______________________
+//action functions: add, remove, replace_________________
 //
 LAF action_remove_hla STR_VAR kit_name = ~RANGER~ remove_ability = ~GA_SPCL922~ END
 
